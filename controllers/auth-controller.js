@@ -12,7 +12,7 @@ module.exports = {
 
   userRegistration: async (req, res, next) => {
     try {
-      const { name, password, email, mobileNo ,admin} = req.body;
+      const { name, password, email, mobileNo, admin } = req.body;
 
       const userExists = await User.findOne({ email });
 
@@ -25,11 +25,18 @@ module.exports = {
       // const salt = await bcrypt.genSalt(10);
       // const hashedPassword = await bcrypt.hash(password, salt);
 
-      await User.create({ name, password, email, mobileNo });
+      const userCreated = await User.create({
+        name,
+        password,
+        email,
+        mobileNo,
+      });
 
       res.status(201).json({
         message: "User created successfully",
-        user: { name, password, email, mobileNo ,admin},
+        userCreated,
+        token:await userCreated.generateToken(),
+        userId:userCreated._id.toString()
       });
     } catch (error) {
       console.log("Something went wrong", error);
