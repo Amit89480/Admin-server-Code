@@ -12,7 +12,7 @@ module.exports = {
 
   userRegistration: async (req, res, next) => {
     try {
-      const { name, password, email, mobileNo } = req.body;
+      const { name, password, email, mobileNo ,admin} = req.body;
 
       const userExists = await User.findOne({ email });
 
@@ -20,18 +20,19 @@ module.exports = {
         res.status(400).json({ message: "User already exists" });
       }
 
-
       // this is a way to secure password using bcryptjs
-      
+
       // const salt = await bcrypt.genSalt(10);
       // const hashedPassword = await bcrypt.hash(password, salt);
 
-
       await User.create({ name, password, email, mobileNo });
 
-      res.status(201).json({ message: "User created successfully" });
+      res.status(201).json({
+        message: "User created successfully",
+        user: { name, password, email, mobileNo ,admin},
+      });
     } catch (error) {
-      console.log("somethig went wrong");
+      console.log("Something went wrong", error);
     }
   },
 
