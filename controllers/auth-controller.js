@@ -24,26 +24,16 @@ module.exports = {
 
       const passwordMatch = await bcrypt.compare(password, userExists.password);
 
-      if (!passwordMatch) {
-        userExists.loginAttempts += 1;
-        await userExists.save();
-
-        if (userExists.loginAttempts > 5) {
-          return res.status(400).json({ message: "Account is locked" });
-        }
-
-        return res.status(400).json({ message: "Invalid Credentials" });
-      }
+      console.log(userExists?.password);
 
       if (passwordMatch) {
-        userExists.loginAttempts = 0;
-        await userExists.save();
-
         res.status(200).json({
           message: "Login Successful",
           token: await userExists.generateToken(),
           userId: userExists._id.toString(),
         });
+      } else {
+        res.status(400).json({ message: "Invalid Credentials" });
       }
     } catch (error) {
       res.status(400).json({ message: "Something went wrong" });
@@ -52,7 +42,7 @@ module.exports = {
 
   userRegistration: async (req, res, next) => {
     try {
-      const { name, password, email, mobileNo, admin } = req.body;
+      const { username, password, email, mobileNo, admin } = req.body;
 
       const userExists = await User.findOne({ email });
 
@@ -66,10 +56,11 @@ module.exports = {
       // const hashedPassword = await bcrypt.hash(password, salt);
 
       const userCreated = await User.create({
-        name,
+        username,
         password,
         email,
         mobileNo,
+        admin,
       });
 
       res.status(201).json({
@@ -115,12 +106,26 @@ module.exports = {
       console.log("Something went wrong");
     }
   },
-
   isLogin: async (req, res, next) => {
     try {
-      res.status(200).json({ message: "User is logged in" });
+      const { userId } = req.body;
+
+      const user = await User.findById(userId);
+
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const userDetails = {
+        username: user.username,
+        email: user.email,
+        mobileNo: user.mobileNo,
+      };
+
+      res.status(200).json({ message: "User is logged in", user: userDetails });
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
     }
   },
 };

@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 
 
 const userSchema = new mongoose.Schema({
-  name: {
+  username: {
     type: String,
     required: true,
     min: 3,
@@ -49,7 +49,7 @@ userSchema.methods.generateToken =async function () {
   const token = jwt.sign(
     {
       _id: this._id,
-      name: this.name,
+      username: this.username,
       email: this.email,
       mobileNo: this.mobileNo,
       admin: this.admin,
