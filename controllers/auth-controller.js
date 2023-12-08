@@ -24,8 +24,6 @@ module.exports = {
 
       const passwordMatch = await bcrypt.compare(password, userExists.password);
 
-      console.log(userExists?.password);
-
       if (passwordMatch) {
         res.status(200).json({
           message: "Login Successful",
