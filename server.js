@@ -3,9 +3,14 @@ const express = require("express");
 const router = require("./router/auth-router");
 const connectDb = require("./utils/connection");
 const { configDotenv } = require("dotenv");
+const cors = require("cors");
 
+
+//this is where we are setting up the app
 const app = express();
 const PORT = process.env.PORT || 4000;
+app.use(cors());
+
 
 //here we are using the middleware
 
